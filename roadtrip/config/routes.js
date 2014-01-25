@@ -8,6 +8,7 @@ var passport = require('passport');
 // information.
 module.exports = function routes() {
 	this.match('login', 'pages#login', { via: 'get' });
+	this.match('signup', 'pages#signup', {via: 'post'});
   this.root('pages#main');
 
   this.match('login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }), { via: 'post' })
