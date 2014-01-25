@@ -10,9 +10,13 @@ module.exports = function routes() {
   this.root('pages#main');
 	this.match('login', 'pages#login', { via: 'get' });
 
-  this.match('users/login', passport.authenticate('local', { successRedirect: '/users/successLogin', failureRedirect: '/users/failLogin' }), { via: 'post' })
-  this.match('users/successLogin', 'users#successLogin', { via: 'get' });
-  this.match('users/failLogin', 'users#failLogin', { via: 'get' });
-  this.match('users/currentUser', 'users#currentUser',  { via: 'get'});
-	this.match('users/signup', 'users#signup', { via: 'post' });
+  this.post('users/login', passport.authenticate('local', { successRedirect: '/users/successLogin', failureRedirect: '/users/failLogin' }));
+	this.post('users/signup', 'users#signup');
+  this.get('users/successLogin', 'users#successLogin');
+  this.get('users/failLogin', 'users#failLogin');
+  this.get('users/currentUser', 'users#currentUser');
+
+  this.resources('trips', function() {
+  	this.post('end', 'trips#end');
+  });
 }
