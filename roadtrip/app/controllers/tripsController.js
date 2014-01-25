@@ -19,9 +19,11 @@ tripsController.create = function() {
   if (this.req.user) {
     var trip = new Trip();
     trip.name = this.param('name');
-    trip.people = [this.req.user];
+    trip.people = [this.req.user._id];
     trip.startPoint = [this.param('startLat'), this.param('startLng')];
     trip.endPoint = [this.param('endLat'), this.param('endLng')];
+
+    console.log(trip);
 
     trip.save(function(err) {
       if(err)
@@ -34,6 +36,34 @@ tripsController.create = function() {
     result = { status: "err", error: "not logged in" };
     self.respond({ 'json': function() { self.res.json(result); } });
   }
+}
+
+// get to /addFriend
+// id           id of trip
+// friendId     objectId of friend user
+tripsController.addFriend = function() {
+  var result;
+  var id = this.param('id');
+  var self = this;
+
+  Trip.findById(id, function(err, trip) {
+    if (err) {
+      result = { status: "err", error: err }
+      self.respond({ 'json': function() { self.res.json(result); } });
+    } else {
+      var friendId = self.param('friendId');
+      trip.people.push(friendId);
+      trip.save(function(err) {
+        if (err) {
+          result = { status: "err", error: err }
+        } else {
+          result = { status: "ok" }
+        }
+        self.respond({ 'json': function() { self.res.json(result); } });
+      })
+    }
+
+  });
 }
 
 tripsController.signup = function() {

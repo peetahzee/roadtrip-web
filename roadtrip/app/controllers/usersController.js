@@ -36,20 +36,26 @@ usersController.signup = function() {
 	var self = this;
   user.save(function(err) {
     var result;
-    if (err)
-      result = { status: "err", error: "err" };
-    else
-      result = { status: "ok" };
-
-    self.req.login(user, function(err) {
-      if (err) 
-        result = { status: "err",  error: "err" };
-      else 
-        result = { status: "ok" }; 
+    if (err) {
+      if (err.code == 11000) {
+        result = { status: "err", error: "user already exists" }
+      } else {
+        result = { status: "err", error: err };
+      }
       self.respond({
         'json': function() { self.res.json(result); }
       });
-    });
+    } else {
+      self.req.login(user, function(err) {
+        if (err) 
+          result = { status: "err",  error: err };
+        else 
+          result = { status: "ok" }; 
+        self.respond({
+          'json': function() { self.res.json(result); }
+        });
+      });
+    }
 
   });
 }

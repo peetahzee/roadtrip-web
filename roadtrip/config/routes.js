@@ -16,7 +16,6 @@ module.exports = function routes() {
   this.get('users/failLogin', 'users#failLogin');
   this.get('users/currentUser', 'users#currentUser');
 
-  this.resources('trips', function() {
-  	this.post('end', 'trips#end');
-  });
+  this.resource('trips');
+  this.post('trips/addFriend', 'trips#addFriend');
 }
