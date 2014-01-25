@@ -38,7 +38,7 @@ tripsController.create = function() {
   }
 }
 
-// get to /addFriend
+// post to /addFriend
 // id           id of trip
 // friendId     objectId of friend user
 tripsController.addFriend = function() {
@@ -63,6 +63,35 @@ tripsController.addFriend = function() {
       })
     }
 
+  });
+}
+
+// post to /addSpot
+// id           id of trip
+// lat
+// lng
+tripsController.addSpot = function() {
+  var result;
+  var id = this.param('id');
+  var self = this;
+
+  Trip.findById(id, function(err, trip) {
+    if (err) {
+      result = { status: "err", error: err }
+      self.respond({ 'json': function() { self.res.json(result); } });
+    } else {
+      var lat = self.param('lat');
+      var lng = self.param('lng');
+      trip.spots.push({ latLng: [lat, lng] });
+      trip.save(function(err) {
+        if (err) {
+          result = { status: "err", error: err }
+        } else {
+          result = { status: "ok" }
+        }
+        self.respond({ 'json': function() { self.res.json(result); } });
+      })
+    }
   });
 }
 
