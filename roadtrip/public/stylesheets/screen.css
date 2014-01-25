@@ -25,9 +25,9 @@ header {
 	min-width: 500px;
 
 	position: absolute;
-	top: 20px;
-	left: 20px;
-	width: 50%;
+	top: 0;
+	margin: 1.5% 2%;
+	width: 96%;
 	box-sizing: border-box;
 }
 
@@ -69,6 +69,7 @@ header #user a:hover {
 #banner {
 	height: 90%;
 	width: 100%;
+	text-align: center;
 }
 
 .banner-background {
@@ -85,22 +86,27 @@ header #user a:hover {
 }
 
 .tagline {
-	position: absolute;
-
-	top: 170px;
-	left: 38px;
 	font-size: 50px;
 	text-shadow: 3px 3px 10px rgba(0,0,0,0.8);
 	font-weight: bold;
 }
 .description {
-	position: absolute;
-
-	top: 240px;
-	left: 38px;
-	max-width: 50%;
 	text-align: left;
 	text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+}
+
+.banner-box {
+	position: absolute;
+
+	top: 170px;
+	left: 25%;
+	width: 50%;
+	text-align: left;
+}
+
+.welcome-center {
+	width: 50%;
+	margin: 0 auto;
 }
 
 .welcome-box {
@@ -111,7 +117,6 @@ header #user a:hover {
 	color: #333;
 	padding-left: 30px;
 	font-size: 30px;
-	max-width: 50%;
 	text-align: left;
 	font-weight: bold;
 }
@@ -119,15 +124,13 @@ header #user a:hover {
 	color: #555;
 	padding-left: 30px;
 	font-size: 17px;
-	max-width: 50%;
 	text-align: left;
 }
 
 .welcome-screenshots {
-	margin-top: 20px;
-	margin-left: 28px;
-	text-align: left;
-	margin-bottom: 20px;
+	min-width: 700px;
+	margin-bottom: 40px;
+	text-align: center;
 }
 .welcome-screenshots img {
 		height: 400px;
