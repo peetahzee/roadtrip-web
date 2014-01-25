@@ -20,21 +20,4 @@ pagesController.login = function() {
 	this.render();
 }
 
-pagesController.signup = function() {
-	populateController(this);
-
-	var user = new User();
-	user.username = this.param('username');
-	user.password = bcrypt.hashSync(this.param('password'), 8);
-	user.email = this.param('email');
-
-	var self = this;
-  user.save(function(err) {
-    if (err)
-      return self.redirect("/");
-
-    return self.redirect("/login");
-  });
-}
-
 module.exports = pagesController;

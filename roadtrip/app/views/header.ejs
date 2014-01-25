@@ -8,5 +8,13 @@
   <body>
   	<header>
 	    <h1>roadtrip</h1>
+	    <div id="user">
+	    <% if (user) { %> 
+	    	<a href="/user"><%= user.username %></a>
+	    <% } else { %>
+	    	<a href="/login">login</a>
+	    <% } %>
+	    </div>
+	    <div class="clear"></div>
 	  </header>
 	  <div id="content">

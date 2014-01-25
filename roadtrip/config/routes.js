@@ -7,9 +7,8 @@ var passport = require('passport');
 // Guide on [routing](http://locomotivejs.org/guide/routing.html) for additional
 // information.
 module.exports = function routes() {
-	this.match('login', 'pages#login', { via: 'get' });
-	// this.match('signup', 'pages#signup', {via: 'post'});
   this.root('pages#main');
+	this.match('login', 'pages#login', { via: 'get' });
 
   this.match('users/login', passport.authenticate('local', { successRedirect: '/users/successLogin', failureRedirect: '/users/failLogin' }), { via: 'post' })
   this.match('users/successLogin', 'users#successLogin', { via: 'get' });
