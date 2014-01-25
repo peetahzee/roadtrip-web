@@ -8,8 +8,11 @@ var passport = require('passport');
 // information.
 module.exports = function routes() {
 	this.match('login', 'pages#login', { via: 'get' });
-	this.match('signup', 'pages#signup', {via: 'post'});
+	// this.match('signup', 'pages#signup', {via: 'post'});
   this.root('pages#main');
 
-  this.match('login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }), { via: 'post' })
+  this.match('users/login', passport.authenticate('local', { successRedirect: '/users/successLogin', failureRedirect: '/users/failLogin' }), { via: 'post' })
+  this.match('users/successLogin', 'users#successLogin', { via: 'get' });
+  this.match('users/failLogin', 'users#failLogin', { via: 'get' });
+	this.match('users/signup', 'users#signup', { via: 'post' });
 }

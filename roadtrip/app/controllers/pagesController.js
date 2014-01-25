@@ -1,6 +1,5 @@
 var locomotive = require('locomotive')
   , Controller = locomotive.Controller
-  , _          = require('underscore')
   , User       = require('../models/user')
   , bcrypt     = require('bcrypt');
 
