@@ -62,13 +62,24 @@ tripsController.create = function() {
     var code;
     trip.save(function(err) {
       if(err) {
-        result = { status: "err", error: err }
-        code = 503;
+        self.respond({ 'json': function() {
+          self.res.json(503, { status: "err", error: err }); 
+        } });
       } else {
+        self.respond({ 'json': function() {
+          self.res.json(200, { 
+            status: "ok",
+            result: {
+              name: trip.name,
+              id: trip._id
+            }}
+          ); 
+        } });
+
         result = { status: "ok" }
         code = 200;
       }
-      self.respond({ 'json': function() { self.res.json(code, result); } });
+      
     });
   } else {
     result = { status: "err", error: "not logged in" };
