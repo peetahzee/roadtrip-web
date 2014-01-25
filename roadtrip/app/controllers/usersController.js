@@ -6,6 +6,13 @@ var locomotive = require('locomotive')
 
 var usersController = new Controller();
 
+usersController.currentUser = function() {
+  var self = this;
+  this.respond( {
+    'json': function() { self.res.json(self.req.user) }
+  });
+}
+
 usersController.successLogin = function() {
   var self = this;
   this.respond({ 
@@ -31,12 +38,19 @@ usersController.signup = function() {
     var result;
     if (err)
       result = { status: "err", error: "err" };
+    else
+      result = { status: "ok" };
 
-    result = { status: "ok" };
-
-    self.respond({
-      'json': function() { self.res.json(result); }
+    self.req.login(user, function(err) {
+      if (err) 
+        result = { status: "err",  error: "err" };
+      else 
+        result = { status: "ok" }; 
+      self.respond({
+        'json': function() { self.res.json(result); }
+      });
     });
+
   });
 }
 
