@@ -148,6 +148,7 @@ header #user a:hover {
 }
 
 footer {
+	margin-top: 30px;
 	padding: 30px;
 	background: #00233D;
 	font-size: 13px;

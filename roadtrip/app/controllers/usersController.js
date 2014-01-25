@@ -16,14 +16,14 @@ usersController.currentUser = function() {
 usersController.successLogin = function() {
   var self = this;
   this.respond({ 
-    'json': function() { self.res.json({status: "ok"}) }
+    'json': function() { self.res.json(200, {status: "ok"}) }
   });
 }
 
 usersController.failLogin = function() {
   var self = this;
   this.respond({ 
-    'json': function() { self.res.json({status: "err"}) }
+    'json': function() { self.res.json(401, {status: "err"}) }
   });
 }
 
@@ -37,23 +37,29 @@ usersController.signup = function() {
 	var self = this;
   user.save(function(err) {
     var result;
+    var code;
     if (err) {
       if (err.code == 11000) {
         result = { status: "err", error: "user already exists" }
+        code = 409;
       } else {
         result = { status: "err", error: err };
+        code = 501;
       }
       self.respond({
-        'json': function() { self.res.json(result); }
+        'json': function() { code, self.res.json(result); }
       });
     } else {
       self.req.login(user, function(err) {
-        if (err) 
+        if (err) {
           result = { status: "err",  error: err };
-        else 
+          code = 503;
+        } else {
           result = { status: "ok" }; 
+          code = 200
+        }
         self.respond({
-          'json': function() { self.res.json(result); }
+          'json': function() { self.res.json(code, result); }
         });
       });
     }
