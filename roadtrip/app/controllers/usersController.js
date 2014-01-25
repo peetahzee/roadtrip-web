@@ -32,6 +32,7 @@ usersController.signup = function() {
 	user.username = this.param('username');
 	user.password = bcrypt.hashSync(this.param('password'), 8);
 	user.email = this.param('email');
+  user.picture = this.param('picture');
 
 	var self = this;
   user.save(function(err) {
