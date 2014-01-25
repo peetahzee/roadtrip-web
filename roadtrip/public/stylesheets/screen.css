@@ -4,19 +4,31 @@ html, body {
   margin: 0;
   padding: 0;
   font: 20px "Roboto", Helvetica, Arial, sans-serif;
-  background: #00467D;
+  background: #ccc;
   text-align: center;
   color: #fff;
   font-size: 300;
+  height: 100%;
+  width: 100%;
 }
 
 header {
-	background: #00233D;
+	background: rgba(0,35,61,0.8);
 	text-shadow: 3px 3px 5px rgba(0,0,0,0.5);
 	padding: 40px;
 	color: #fff;
-	box-shadow: 0px 0px 10px rgba(0,0,0,0.6);
+	box-shadow: 0px 0px 20px rgba(0,0,0,0.8);
 	text-align: left;
+	z-index: 2;
+	border-bottom: #00233d;
+
+	min-width: 500px;
+
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	width: 50%;
+	box-sizing: border-box;
 }
 
 header h1 {
@@ -36,7 +48,7 @@ header #user {
 
 header #user a{
 	font-size: 13px;
-	background: rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255,0.1);
 	box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
 	padding: 10px 20px;
 	cursor: pointer;
@@ -50,8 +62,76 @@ header #user a:hover {
 
 #content {
 	width: 80%;
-	margin: 20px auto 0;
+	margin: 170px auto 0;
 	text-align: left;
+}
+
+#banner {
+	height: 90%;
+	width: 100%;
+}
+
+.banner-background {
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+}
+.banner-background img {
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	min-width: 1200px;
+}
+
+.tagline {
+	position: absolute;
+
+	top: 170px;
+	left: 38px;
+	font-size: 50px;
+	text-shadow: 3px 3px 10px rgba(0,0,0,0.8);
+	font-weight: bold;
+}
+.description {
+	position: absolute;
+
+	top: 240px;
+	left: 38px;
+	max-width: 50%;
+	text-align: left;
+	text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+}
+
+.welcome-box {
+	margin: 50px 0;
+}
+
+.welcome-headline {
+	color: #333;
+	padding-left: 30px;
+	font-size: 30px;
+	max-width: 50%;
+	text-align: left;
+	font-weight: bold;
+}
+.welcome-description {
+	color: #555;
+	padding-left: 30px;
+	font-size: 17px;
+	max-width: 50%;
+	text-align: left;
+}
+
+.welcome-screenshots {
+	margin-top: 20px;
+	margin-left: 28px;
+	text-align: left;
+	margin-bottom: 20px;
+}
+.welcome-screenshots img {
+		height: 400px;
+		margin-right: 20px;
 }
 
 .box {
@@ -62,6 +142,15 @@ header #user a:hover {
 	box-shadow: 0px 0px 20px rgba(0,0,0,0.4);
 	margin-right: 2%;
 	float: left;
+}
+
+footer {
+	padding: 30px;
+	background: #00233D;
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.3);
+	box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+	text-align: center;
 }
 
 h2 {

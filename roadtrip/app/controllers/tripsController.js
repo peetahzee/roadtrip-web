@@ -97,31 +97,8 @@ tripsController.addSpot = function() {
   });
 }
 
-tripsController.signup = function() {
-	var user = new User();
-	user.username = this.param('username');
-	user.password = bcrypt.hashSync(this.param('password'), 8);
-	user.email = this.param('email');
-
-	var self = this;
-  user.save(function(err) {
-    var result;
-    if (err)
-      result = { status: "err", error: err };
-    else
-      result = { status: "ok" };
-
-    self.req.login(user, function(err) {
-      if (err) 
-        result = { status: "err",  error: err };
-      else 
-        result = { status: "ok" }; 
-      self.respond({
-        'json': function() { self.res.json(result); }
-      });
-    });
-
-  });
+tripsController.end = function() {
+  
 }
 
 module.exports = tripsController;
