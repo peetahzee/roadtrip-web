@@ -1,0 +1,140 @@
+var locomotive = require('locomotive')
+  , Controller = locomotive.Controller
+  , Twitter    = require('twitter-js-client').Twitter
+  , Trip       = require('../models/trip')
+  , TwitterUser= require('../models/twitterUser')
+  , Media      = require('../models/media')
+  , _          = require('underscore');
+
+var twitterController = new Controller();
+
+var config = {
+    "consumerKey": "jHDL7q3H55pVBVIbnK4oQ",
+    "consumerSecret": "jDjVTazFjCjR9dMzuPXE04ZDrOBEnzKJU0VyvA49O0",
+    "callBackUrl": "http://suchroadtrip.com"
+}
+
+var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, callback) {
+  var self = this;
+  var results = [];
+  var successes = 0;
+  var newConfig = _.extend(config, {
+    accessToken: oauthToken,
+    accessTokenSecret: oauthSecret
+  });
+  var error = function(err, response, body) {
+    console.log("TWITTER ERROR: [" + username + "]");
+    console.log(err);
+  };
+  var success = function(data) {
+    var json = JSON.parse(data);
+    var threeMinAgo = new Date();
+    threeMinAgo.setMinutes(threeMinAgo.getMinutes() - 3);
+
+    _.each(json, function(tweet) {
+      var tweetDate = new Date(tweet.created_at);
+      console.log(tweet.text);
+      //within 3 minutes
+      if(tweetDate.valueOf() > threeMinAgo.valueOf()) {
+        console.log("pass");
+        var media = new Media();
+        media.user = userId;
+        media.text = tweet.text;
+        media.origId = tweet.id;
+        media.medium = 'twitter'
+        if(tweet.entities.media) { 
+          media.picture = tweet.entities.media[0].media_url;
+        }
+        if(tweet.geo) {
+          media.latlng = tweet.geo.coordinates;
+        }
+        if(tweet.place) {
+          media.city = tweet.place.full_name;
+        }
+
+        media.save(function(err) {
+          if(err) {
+            results.push("Save error for tweet: " + media.text + " [" + media.user + "]\n");
+          } else {
+            successes++;
+            results.push("Saved tweet: " + media.text + " [" + media.user + "]\n");
+          }
+        });
+      }
+    });
+  };
+
+  var twitter = new Twitter(newConfig);
+  twitter.getUserTimeline({
+    screen_name: username,
+    count: 10,
+    include_rts: false
+  }, error, success);
+
+}
+
+twitterController.post = function() {
+  var self = this;
+  var twitter = new Twitter(config);
+  var list = [];
+
+  Trip.find({
+    $or : [
+      {'endTime': null},
+      {'endTime': {'$lt': new Date() } } 
+    ]
+  }, {}, function(err, trips) {
+    _.each(trips, function(trip) {
+      _.each(trip.people, function(person) {
+        list.push(person.toHexString());
+      })
+    })
+
+    list = _.uniq(list);
+    _.each(list, function(userId) {
+      TwitterUser.findOne( { 'user' : userId } , {} , function(err, twitterUser) {
+        if(twitterUser != null) {
+          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId);
+        }
+      });
+    });
+    self.respond({
+      'json': function() { self.res.json(200, { status: "ok" }); }
+    });
+  });
+}
+
+// store our twitter users
+// post /twitter/link
+// twitterId
+// twitterUsername
+// userId
+// oauthToken
+// oauthSecret
+twitterController.link = function() {
+  var self = this;
+
+  var twitterUser = new TwitterUser();
+  twitterUser.user = self.param("userId");
+  twitterUser.twitterId = self.param("twitterId");
+  twitterUser.twitterUsername = self.param("twitterUsername");
+  twitterUser.oauthToken = self.param("oauthToken");
+  twitterUser.oauthSecret = self.param("oauthSecret");
+
+  twitterUser.save(function(err) {
+    var result;
+    var code;
+    if (err) {
+      self.respond({
+        'json': function() { self.res.json(503, { status: "err", error: err }); }
+      });
+    } else {
+      self.respond({
+        'json': function() { self.res.json(200, { status: "ok" }); }
+      });
+    }
+
+  });
+
+}
+module.exports = twitterController;
