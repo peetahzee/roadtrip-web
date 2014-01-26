@@ -30,6 +30,7 @@ module.exports = function routes() {
 
   this.resource('trips');
   this.post('trips/addFriend', 'trips#addFriend');
+  this.post('trips/addFriendId', 'trips#addFriendId');
   this.post('trips/addSpot', 'trips#addSpot');
 
   this.get('twitter/post', 'twitter#post');

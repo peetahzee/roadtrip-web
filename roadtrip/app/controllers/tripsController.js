@@ -12,32 +12,36 @@ var accessTrip = function(id, context, process) {
   var self = context;
 
   if (self.req.user) {
+    console.log("[id]" + id);
     Trip.findById(id, function(err, trip) {
       if (err) {
         result = { status: "err", error: err };
         self.respond({ 'json': function() { self.res.json(503, result); } });
-      } else if (trip == null) {
+      } else if (!trip == null) {
         result = { status: "err", error: "can't find trip" };
         self.respond({ 'json': function() { self.res.json(404, result); } });
       } else if (!trip.people[0].equals(self.req.user._id)) {
         result = { status: "err", error: "no permission" };
         self.respond({ 'json': function() { self.res.json(403, result); } });
       } else {
-        process.call(undefined, trip);
-        var code;
-        trip.save(function(err) {
-          if (err) {
-            result = { status: "err", error: err }
-            console.log("#########503ERRORR##########");
-            console.log(err);
-            console.log("#########503ERRORR##########");
-            code = 503;
-          } else {
-            result = { status: "ok" }
-            code = 200;
+        process.call(undefined, trip, function(shouldntContinue) {
+          if(!shouldntContinue) {
+            var code;
+            trip.save(function(err) {
+              if (err) {
+                result = { status: "err", error: err }
+                console.log("#########503ERRORR##########");
+                console.log(err);
+                console.log("#########503ERRORR##########");
+                code = 503;
+              } else {
+                result = { status: "ok" }
+                code = 200;
+              }
+              self.respond({ 'json': function() { self.res.json(code, result); } });
+            });
           }
-          self.respond({ 'json': function() { self.res.json(code, result); } });
-        })
+        });
       }
     });
   } else {
@@ -95,14 +99,35 @@ tripsController.create = function() {
   }
 }
 
-// post to /addFriend
+// post to /addFriendId
 // id           id of trip
 // friendId     objectId of friend user
-tripsController.addFriend = function() {
+tripsController.addFriendId = function() {
   var self = this;
-  accessTrip(self.param('id'), self, function(trip) {
+  accessTrip(self.param('id'), self, function(trip, callback) {
     var friendId = self.param('friendId');
     trip.people.push(friendId);
+    callback.call();
+  });
+}
+
+// post to /addFriend
+// id           id of trip
+// friendName   username
+tripsController.addFriend = function() {
+  var self = this;
+  accessTrip(self.param('id'), self, function(trip, callback) {
+    var friendName = self.param('friendName');
+    User.findOne( { 'username': friendName }, function(err, user) {
+      if(err) {
+        self.respond({ 'json': function() { self.res.json(503, { status: "err", error: err }); } });
+      } else if (!user) {
+        self.respond({ 'json': function() { self.res.json(404, { status: "err", error: "can't find user" }); } });
+      } else {
+        trip.people.push(user._id);
+        callback.call();
+      }
+    });
   });
 }
 
@@ -113,10 +138,11 @@ tripsController.addFriend = function() {
 tripsController.addSpot = function() {
   var self = this;
   console.log("###########[ADDSPOT]########### trip id: " + self.param('id')); 
-  accessTrip(self.param('id'), self, function(trip) {
+  accessTrip(self.param('id'), self, function(trip, callback) {
     var lat = self.param('lat');
     var lng = self.param('lng');
     trip.spots.push({ latLng: [lat, lng] });
+    callback.call();
   });
 }
 

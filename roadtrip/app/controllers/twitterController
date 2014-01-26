@@ -14,8 +14,10 @@ var config = {
     "callBackUrl": "http://suchroadtrip.com"
 }
 
-var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId) {
+var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, callback) {
   var self = this;
+  var results = [];
+  var successes = 0;
   var newConfig = _.extend(config, {
     accessToken: oauthToken,
     accessTokenSecret: oauthSecret
@@ -50,15 +52,16 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId) {
 
         media.save(function(err) {
           if(err) {
-            console.log("503");
-            console.log(err);
-            self.respond({ 'json': function() { self.res.json(503, { status: "err", error: err }); } });
+            results.push("Save error for tweet: " + media.text + " [" + media.user + "]\n");
           } else {
-            self.respond({ 'json': function() { self.res.json(200, { status: "ok" }); } });
+            successes++;
+            results.push("Saved tweet: " + media.text + " [" + media.user + "]\n");
           }
         });
       }
     });
+    results.push("[[[Total " + successes + " tweets saved]]]");
+    callback(results);
   };
 
   var twitter = new Twitter(newConfig);
@@ -91,14 +94,14 @@ twitterController.post = function() {
     _.each(list, function(userId) {
       TwitterUser.findOne( { 'user' : userId } , {} , function(err, twitterUser) {
         if(twitterUser != null) {
-          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId);
+          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId, function(results) {
+            self.respond( {
+              'json': function() { self.res.json(200, {status: "ok", results: results})}
+            });
+          });
         }
       });
     });
-  });
-
-  this.respond( {
-    'json': function() { self.res.json(200, {status: "ok"})}
   });
 }
 
