@@ -106,7 +106,7 @@ tripsController.addFriend = function() {
 // lng
 tripsController.addSpot = function() {
   var self = this;
-  console.log("###########[ADDSPOT]########### trip id: " + self.param('id/)')); 
+  console.log("###########[ADDSPOT]########### trip id: " + self.param('id')); 
   accessTrip(self.param('id'), self, function(trip) {
     var lat = self.param('lat');
     var lng = self.param('lng');
