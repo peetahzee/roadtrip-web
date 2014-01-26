@@ -28,6 +28,9 @@ var accessTrip = function(id, context, process) {
         trip.save(function(err) {
           if (err) {
             result = { status: "err", error: err }
+            console.log("#########503ERRORR##########"])
+            console.log(err);
+            console.log("#########503ERRORR##########"])
             code = 503;
           } else {
             result = { status: "ok" }
