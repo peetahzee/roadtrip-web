@@ -12,9 +12,7 @@ module.exports = function routes() {
 
   // this.post('users/login', passport.authenticate('local', { successRedirect: '/users/successLogin', failureRedirect: '/users/failLogin' }));
   this.post('users/login', function(req, res, next) {
-  	console.log("##################");
-  	console.log(req.body);
-  	console.log("###################");
+  	console.log("##############[USER]############" + req.body);
 	  passport.authenticate('local', function(err, user, info) {
 	    if (err) { return res.json(503, { status: "err", error: err }); }
 	    if (!user) { return res.json(401, { status: "err", error: "invalid user name / password" }); }

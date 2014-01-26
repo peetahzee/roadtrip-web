@@ -13,9 +13,6 @@ var accessTrip = function(id, context, process) {
 
   if (self.req.user) {
     Trip.findById(id, function(err, trip) {
-      console.log("###################");
-      console.log("Trip id: " + id);
-      console.log("###################")
       if (err) {
         result = { status: "err", error: err };
         self.respond({ 'json': function() { self.res.json(503, result); } });
@@ -67,6 +64,7 @@ tripsController.create = function() {
     trip.endCity = this.param('endCity');
 
     var code;
+    console.log("##########[CREATETRIP]######### startPoint: " + trip.startCity + "; endPoint: " + trip.endCity );
     trip.save(function(err) {
       if(err) {
         self.respond({ 'json': function() {
@@ -108,6 +106,7 @@ tripsController.addFriend = function() {
 // lng
 tripsController.addSpot = function() {
   var self = this;
+  console.log("###########[ADDSPOT]########### trip id: " + self.param('id/)')); 
   accessTrip(self.param('id'), self, function(trip) {
     var lat = self.param('lat');
     var lng = self.param('lng');
