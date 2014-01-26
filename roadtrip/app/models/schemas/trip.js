@@ -8,6 +8,8 @@ var TripSchema = new Schema({
   spots: [SpotSchema],
   startPoint: [Number], // latlng
   endPoint: [Number], // latlng
+  startCity: String,
+  endCity: String,
   startTime: { type: Date, default: Date.now },
   endTime: Date
 });

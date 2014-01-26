@@ -13,6 +13,9 @@ var accessTrip = function(id, context, process) {
 
   if (self.req.user) {
     Trip.findById(id, function(err, trip) {
+      console.log("###################");
+      console.log("Trip id: " + id);
+      console.log("###################")
       if (err) {
         result = { status: "err", error: err };
         self.respond({ 'json': function() { self.res.json(503, result); } });
@@ -47,8 +50,10 @@ var accessTrip = function(id, context, process) {
 // name         title of trip
 // startLat     lat of start point 
 // startLng     lng of start point
+// startCity    start city
 // endLat       lat of end point
 // endLng       lng of end point
+// endCity      end city
 tripsController.create = function() {
   var result;
   var self = this;
@@ -58,6 +63,8 @@ tripsController.create = function() {
     trip.people = [this.req.user._id];
     trip.startPoint = [this.param('startLat'), this.param('startLng')];
     trip.endPoint = [this.param('endLat'), this.param('endLng')];
+    trip.startCity = this.param('startCity');
+    trip.endCity = this.parm('endCity');
 
     var code;
     trip.save(function(err) {
@@ -75,9 +82,6 @@ tripsController.create = function() {
             }}
           ); 
         } });
-
-        result = { status: "ok" }
-        code = 200;
       }
       
     });
