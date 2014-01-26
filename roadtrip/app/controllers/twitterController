@@ -3,20 +3,77 @@ var locomotive = require('locomotive')
   , Twitter    = require('twitter-js-client').Twitter
   , Trip       = require('../models/trip')
   , TwitterUser= require('../models/twitterUser')
+  , Media      = require('../models/media')
+  , _          = require('underscore');
 
 var twitterController = new Controller();
 
 var config = {
     "consumerKey": "jHDL7q3H55pVBVIbnK4oQ",
     "consumerSecret": "jDjVTazFjCjR9dMzuPXE04ZDrOBEnzKJU0VyvA49O0",
-    "accessToken": "18332163-AmvpZwTnwA0e1wBe4V2ls6hiTZjaFrvHVBjsvGEsh",
-    "accessTokenSecret": "TpzYFMuJoBRcMz4zf7cxR8spNpkcd5Dw81dk7fPYMPMKX",
     "callBackUrl": "http://suchroadtrip.com"
+}
+
+var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId) {
+  var self = this;
+  var newConfig = _.extend(config, {
+    accessToken: oauthToken,
+    accessTokenSecret: oauthSecret
+  });
+  var error = function(err, response, body) {
+    console.log("TWITTER ERROR: [" + username + "]");
+    console.log(err);
+  };
+  var success = function(data) {
+    var json = JSON.parse(data);
+    var threeMinAgo = new Date();
+    threeMinAgo.setMinutes(threeMinAgo.getMinutes() - 3);
+
+    _.each(json, function(tweet) {
+      var tweetDate = new Date(tweet.created_at);
+      //within 3 minutes
+      if(tweetDate.valueOf() > threeMinAgo.valueOf()) {
+        var media = new Media();
+        media.user = userId;
+        media.text = tweet.text;
+        media.origId = tweet.id;
+        media.medium = 'twitter'
+        if(tweet.entities.media) { 
+          media.picture = tweet.entities.media[0].media_url;
+        }
+        if(tweet.geo) {
+          media.latlng = tweet.geo.coordinates;
+        }
+        if(tweet.place) {
+          media.city = tweet.place.full_name;
+        }
+
+        media.save(function(err) {
+          if(err) {
+            console.log("503");
+            console.log(err);
+            self.respond({ 'json': function() { self.res.json(503, { status: "err", error: err }); } });
+          } else {
+            self.respond({ 'json': function() { self.res.json(200, { status: "ok" }); } });
+          }
+        });
+      }
+    });
+  };
+
+  var twitter = new Twitter(newConfig);
+  twitter.getUserTimeline({
+    screen_name: username,
+    count: 10,
+    include_rts: false
+  }, error, success);
+
 }
 
 twitterController.post = function() {
   var self = this;
   var twitter = new Twitter(config);
+  var list = [];
 
   Trip.find({
     $or : [
@@ -24,23 +81,21 @@ twitterController.post = function() {
       {'endTime': {'$lt': new Date() } } 
     ]
   }, {}, function(err, trips) {
-    for (var i = 0; i < trips.length; i++) {
-      for (var j = 0; j < trips[i].people.length; j++) {
-        TwitterUser.find( { 'user' : trips[i].people[j] }, {}, function(err, twitterUser) {
-          console.log(twitterUser);
-        });
-      }
-    }
+    _.each(trips, function(trip) {
+      _.each(trip.people, function(person) {
+        list.push(person.toHexString());
+      })
+    })
+
+    list = _.uniq(list);
+    _.each(list, function(userId) {
+      TwitterUser.findOne( { 'user' : userId } , {} , function(err, twitterUser) {
+        if(twitterUser != null) {
+          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId);
+        }
+      });
+    });
   });
-
-  // var error = function (err, response, body) {
-  //     console.log('ERROR [%s]', err);
-  // };
-  // var success = function (data) {
-  //     console.log('Data [%s]', data);
-  // };
-
-  // twitter.getUserTimeline({ screen_name: 'dcarr622', count: '10'}, error, success);
 
   this.respond( {
     'json': function() { self.res.json(200, {status: "ok"})}
