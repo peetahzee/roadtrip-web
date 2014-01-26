@@ -13,48 +13,6 @@ usersController.currentUser = function() {
   });
 }
 
-// usersController.login = function() {
-//   console.log(this.params('username'));
-//   var self = this;
-//   passport.authenticate('local', function(err, user, info) {
-//     if (err) {
-//       self.respond({
-//         'json': function() { self.  ; }
-//       });
-//     }
-//     if (!user) {
-//       self.respond({
-//         'json': function() { self.res.json(401, {status: "err", error: "invalid username or password"}); }
-//       });
-//     }
-//     req.logIn(user, function(err) {
-//       if (err) {
-//         self.respond({
-//           'json': function() { self.res.json(503, {status: "err", error: err}); }
-//         });
-//       } else {
-//         self.respond({
-//           'json': function() { self.res.json(200, {status: "ok"}); }
-//         })
-//       }
-//     });
-//   });
-// }
-
-usersController.successLogin = function() {
-  var self = this;
-  this.respond({ 
-    'json': function() { self.res.json(200, {status: "ok"}) }
-  });
-}
-
-usersController.failLogin = function() {
-  var self = this;
-  this.respond({ 
-    'json': function() { self.res.json(401, {status: "err"}) }
-  });
-}
-
 usersController.signup = function() {
 	var user = new User();
 	user.username = this.param('username');

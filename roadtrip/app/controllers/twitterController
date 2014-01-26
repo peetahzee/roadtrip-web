@@ -1,0 +1,83 @@
+var locomotive = require('locomotive')
+  , Controller = locomotive.Controller
+  , Twitter    = require('twitter-js-client').Twitter
+  , Trip       = require('../models/trip')
+  , TwitterUser= require('../models/twitterUser')
+
+var twitterController = new Controller();
+
+var config = {
+    "consumerKey": "jHDL7q3H55pVBVIbnK4oQ",
+    "consumerSecret": "jDjVTazFjCjR9dMzuPXE04ZDrOBEnzKJU0VyvA49O0",
+    "accessToken": "18332163-AmvpZwTnwA0e1wBe4V2ls6hiTZjaFrvHVBjsvGEsh",
+    "accessTokenSecret": "TpzYFMuJoBRcMz4zf7cxR8spNpkcd5Dw81dk7fPYMPMKX",
+    "callBackUrl": "http://suchroadtrip.com"
+}
+
+twitterController.post = function() {
+  var self = this;
+  var twitter = new Twitter(config);
+
+  Trip.find({
+    $or : [
+      {'endTime': null},
+      {'endTime': {'$lt': new Date() } } 
+    ]
+  }, {}, function(err, trips) {
+    for (var i = 0; i < trips.length; i++) {
+      for (var j = 0; j < trips[i].people.length; j++) {
+        TwitterUser.find( { 'user' : trips[i].people[j] }, {}, function(err, twitterUser) {
+          console.log(twitterUser);
+        });
+      }
+    }
+  });
+
+  // var error = function (err, response, body) {
+  //     console.log('ERROR [%s]', err);
+  // };
+  // var success = function (data) {
+  //     console.log('Data [%s]', data);
+  // };
+
+  // twitter.getUserTimeline({ screen_name: 'dcarr622', count: '10'}, error, success);
+
+  this.respond( {
+    'json': function() { self.res.json(200, {status: "ok"})}
+  });
+}
+
+// store our twitter users
+// post /twitter/link
+// twitterId
+// twitterUsername
+// userId
+// oauthToken
+// oauthSecret
+twitterController.link = function() {
+  var self = this;
+
+  var twitterUser = new TwitterUser();
+  twitterUser.user = self.param("userId");
+  twitterUser.twitterId = self.param("twitterId");
+  twitterUser.twitterUsername = self.param("twitterUsername");
+  twitterUser.oauthToken = self.param("oauthToken");
+  twitterUser.oauthSecret = self.param("oauthSecret");
+
+  twitterUser.save(function(err) {
+    var result;
+    var code;
+    if (err) {
+      self.respond({
+        'json': function() { self.res.json(503, { status: "err", error: err }); }
+      });
+    } else {
+      self.respond({
+        'json': function() { self.res.json(200, { status: "ok" }); }
+      });
+    }
+
+  });
+
+}
+module.exports = twitterController;
