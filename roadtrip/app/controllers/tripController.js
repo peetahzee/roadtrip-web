@@ -3,27 +3,16 @@ var locomotive = require('locomotive')
   , User       = require('../models/user')
   , bcrypt     = require('bcrypt');
 
-var pagesController = new Controller();
+var tripController = new Controller();
 
 var populateController = function(context) {
 	context.user = context.req.user;
 }
 
-pagesController.main = function() {
-	populateController(this);
-  this.title = 'roadtrip';
-  this.render();
-}
-
-pagesController.login = function() {
-	populateController(this);
-	this.render();
-}
-
-pagesController.trip = function() {
+tripController.show = function() {
 	populateController(this);
 	this.id = this.param("id");
 	this.render();
 }
 
-module.exports = pagesController;
+module.exports = tripController;

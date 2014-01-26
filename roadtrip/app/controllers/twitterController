@@ -33,8 +33,10 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
 
     _.each(json, function(tweet) {
       var tweetDate = new Date(tweet.created_at);
+      console.log(tweet.text);
       //within 3 minutes
       if(tweetDate.valueOf() > threeMinAgo.valueOf()) {
+        console.log("pass");
         var media = new Media();
         media.user = userId;
         media.text = tweet.text;
@@ -52,20 +54,25 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
 
         media.save(function(err) {
           if(err) {
-            results.push("Save error for tweet: " + media.text + " [" + media.user + "]\n");
+            results.push("Save error for tweet: " + media.text + " [" + media.user + "]");
           } else {
             successes++;
-            results.push("Saved tweet: " + media.text + " [" + media.user + "]\n");
+            results.push("Saved tweet: " + media.text + " [" + media.user + "]");
           }
         });
       }
     });
-    results.push("[[[Total " + successes + " tweets saved]]]");
-    console.log("##########[TWITTER]############");
-    console.log(results);
-    console.log("##########[TWITTER]############");
-    callback(results);
+
+    setTimeout(function() {
+      results.push("[[[Total " + successes + " tweets saved]]]");
+      console.log("##########[TWITTER]############");
+      console.log(results);
+      console.log("##########[TWITTER]############");
+      callback(results);
+    }, 5000);
   };
+
+  console.log(newConfig);
 
   var twitter = new Twitter(newConfig);
   twitter.getUserTimeline({

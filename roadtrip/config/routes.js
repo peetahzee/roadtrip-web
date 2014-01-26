@@ -10,6 +10,8 @@ module.exports = function routes() {
   this.root('pages#main');
 	this.match('login', 'pages#login', { via: 'get' });
 
+	this.resource('trip');
+
   // this.post('users/login', passport.authenticate('local', { successRedirect: '/users/successLogin', failureRedirect: '/users/failLogin' }));
   this.post('users/login', function(req, res, next) {
   	console.log("##############[USER]############", req.body);
