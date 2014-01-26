@@ -33,8 +33,10 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
 
     _.each(json, function(tweet) {
       var tweetDate = new Date(tweet.created_at);
+      console.log(tweet.text);
       //within 3 minutes
       if(tweetDate.valueOf() > threeMinAgo.valueOf()) {
+        console.log("pass");
         var media = new Media();
         media.user = userId;
         media.text = tweet.text;
@@ -52,21 +54,19 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
 
         media.save(function(err) {
           if(err) {
-            results.push("Save error for tweet: " + media.text + " [" + media.user + "]");
+            results.push("Save error for tweet: " + media.text + " [" + media.user + "]\n");
           } else {
             successes++;
-            results.push("Saved tweet: " + media.text + " [" + media.user + "]");
+            results.push("Saved tweet: " + media.text + " [" + media.user + "]\n");
           }
+          results.push("[[[Total " + successes + " tweets saved]]]");
+          console.log("##########[TWITTER]############");
+          console.log(results);
+          console.log("##########[TWITTER]############");
+          callback(results);
         });
       }
     });
-
-    setTimeout(function() {
-      results.push("[[[Total " + successes + " tweets saved]]]");
-      console.log("##########[TWITTER]############");
-      console.log(results);
-      console.log("##########[TWITTER]############");
-    }, 1000);
   };
 
   var twitter = new Twitter(newConfig);
@@ -75,6 +75,7 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
     count: 10,
     include_rts: false
   }, error, success);
+
 }
 
 twitterController.post = function() {
@@ -98,13 +99,14 @@ twitterController.post = function() {
     _.each(list, function(userId) {
       TwitterUser.findOne( { 'user' : userId } , {} , function(err, twitterUser) {
         if(twitterUser != null) {
-          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId);
+          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId, function(results) {
+            self.respond( {
+              'json': function() { self.res.json(200, {status: "ok", results: results})}
+            });
+          });
         }
       });
     });
-  });
-  this.respond( {
-    'json': function() { self.res.json( {status: "ok"}) }
   });
 }
 
