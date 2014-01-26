@@ -36,7 +36,9 @@ module.exports = function routes() {
   this.post('trips/addFriend', 'trips#addFriend');
   this.post('trips/addFriendId', 'trips#addFriendId');
   this.post('trips/addSpot', 'trips#addSpot');
+  this.post('trips/end', 'trips#end');
   this.get('trips/spots', 'trips#getSpots');
+  this.get('trips/media', 'trips#getMedia');
 
   this.get('twitter/post', 'twitter#post');
   this.post('twitter/link', 'twitter#link');

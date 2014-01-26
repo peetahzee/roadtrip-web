@@ -2,6 +2,7 @@ var locomotive = require('locomotive')
   , Controller = locomotive.Controller
   , User       = require('../models/user')
   , Trip       = require('../models/trip')
+  , Media      = require('../models/media')
   , bcrypt     = require('bcrypt')
   , passport   = require('passport');
 
@@ -138,25 +139,67 @@ tripsController.addFriend = function() {
 // lng
 tripsController.addSpot = function() {
   var self = this;
-  console.log("###########[ADDSPOT]########### trip id: " + self.param('id')); 
   accessTrip(self.param('id'), self, function(trip, callback) {
-    var lat = self.param('lat');
-    var lng = self.param('lng');
-    trip.spots.push({ latLng: [lat, lng] });
-    callback.call();
+    if(!trip.endTime) {
+      var lat = self.param('lat');
+      var lng = self.param('lng');
+      trip.spots.push({ latLng: [lat, lng] });
+      callback.call();  
+    } else {
+      self.respond({ 'json': function() { self.res.json(503, { status: "err", error: "trip has already ended" }) }});
+    }
+    
   });
 }
 
+// post to /end
+// id         id of trip
+tripsController.end = function() {
+  var self = this;
+  accessTrip(self.param('id'), self, function(trip, callback) {
+    if(!trip.endTime) {
+      trip.endTime = new Date();
+      callback.call();
+    } else {
+      self.respond({ 'json': function() { self.res.json(503, { status: "err", error: "trip has already ended" }) }});
+    }
+  });
+}
+
+//get to /spots
 tripsController.getSpots = function() {
   var self = this;
   accessTrip(self.param('id'), self, function(trip, callback) {
     self.respond({ 'json': function() { self.res.json( { status: "ok", results: trip.spots }); } });
     callback.call(undefined, true);
-  });  
+  }); 
 }
 
-tripsController.end = function() {
+// get to /media
+tripsController.getMedia = function() {
+  var self = this;
+  var timeCriteria;
+  accessTrip(self.param('id'), self, function(trip, callback) {
+    if(trip.endTime) {
+      timeCriteria = { time : { $gte: trip.startTime, $lt: trip.endTime } };
+    } else {
+      timeCriteria = { time : { $gte: trip.startTime}};
+    }
+    Media.find({ $and : [ timeCriteria, { user: { $in : trip.people }}]}, function(err, data) {
+      console.log(data);
+      if (err) {
+        result = { status: "err", error: err }
+        code = 503;
+        self.respond({ 'json': function() { self.res.json(503, { status: "err", error: err }) }});
+      } else {
+        result = { status: "ok", results: data}
+        code = 200;
+        self.respond({ 'json': function() { self.res.json(200, { status: "ok", results: data }) }});
+      }
+    }); 
 
+    callback.call(undefined, true);
+  }); 
 }
 
 module.exports = tripsController;
