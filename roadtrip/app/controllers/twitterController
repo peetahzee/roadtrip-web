@@ -59,14 +59,10 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
             successes++;
             results.push("Saved tweet: " + media.text + " [" + media.user + "]\n");
           }
-          results.push("[[[Total " + successes + " tweets saved]]]");
-          console.log("##########[TWITTER]############");
-          console.log(results);
-          console.log("##########[TWITTER]############");
-          callback(results);
         });
       }
     });
+    callback.call();
   };
 
   var twitter = new Twitter(newConfig);
@@ -99,9 +95,9 @@ twitterController.post = function() {
     _.each(list, function(userId) {
       TwitterUser.findOne( { 'user' : userId } , {} , function(err, twitterUser) {
         if(twitterUser != null) {
-          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId, function(results) {
+          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId, function() {
             self.respond( {
-              'json': function() { self.res.json(200, {status: "ok", results: results})}
+              'json': function() { self.res.json(200, {status: "ok" })}
             });
           });
         }
