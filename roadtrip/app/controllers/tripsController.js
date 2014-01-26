@@ -70,6 +70,9 @@ tripsController.create = function() {
     console.log("##########[CREATETRIP]######### startPoint: " + trip.startCity + "; endPoint: " + trip.endCity );
     trip.save(function(err) {
       if(err) {
+        console.log("#########503ERRORR##########");
+        console.log(err);
+        console.log("#########503ERRORR##########");
         self.respond({ 'json': function() {
           self.res.json(503, { status: "err", error: err }); 
         } });
