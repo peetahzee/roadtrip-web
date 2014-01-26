@@ -102,7 +102,7 @@ twitterController.post = function() {
         if(twitterUser != null) {
           getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId, function(results) {
             self.respond( {
-              'json': function() { self.res.json(200, {status: "ok", results: results})}
+              'json': function() { self.res.json( {status: "ok", results: results}) }
             });
           });
         }
