@@ -12,7 +12,6 @@ var accessTrip = function(id, context, process) {
   var self = context;
 
   if (self.req.user) {
-    console.log("[id]" + id);
     Trip.findById(id, function(err, trip) {
       if (err) {
         result = { status: "err", error: err };
@@ -30,9 +29,7 @@ var accessTrip = function(id, context, process) {
             trip.save(function(err) {
               if (err) {
                 result = { status: "err", error: err }
-                console.log("#########503ERRORR##########");
-                console.log(err);
-                console.log("#########503ERRORR##########");
+                console.log("#########503ERRORR##########"); console.log(err); console.log("#########503ERRORR##########");
                 code = 503;
               } else {
                 result = { status: "ok" }
@@ -40,6 +37,8 @@ var accessTrip = function(id, context, process) {
               }
               self.respond({ 'json': function() { self.res.json(code, result); } });
             });
+          } else {
+
           }
         });
       }
@@ -121,8 +120,10 @@ tripsController.addFriend = function() {
     User.findOne( { 'username': friendName }, function(err, user) {
       if(err) {
         self.respond({ 'json': function() { self.res.json(503, { status: "err", error: err }); } });
+        callback.call(undefined, true);
       } else if (!user) {
         self.respond({ 'json': function() { self.res.json(404, { status: "err", error: "can't find user" }); } });
+        callback.call(undefined, true);
       } else {
         trip.people.push(user._id);
         callback.call();
@@ -144,6 +145,14 @@ tripsController.addSpot = function() {
     trip.spots.push({ latLng: [lat, lng] });
     callback.call();
   });
+}
+
+tripsController.getSpots = function() {
+  var self = this;
+  accessTrip(self.param('id'), self, function(trip, callback) {
+    self.respond({ 'json': function() { self.res.json( { status: "ok", results: trip.spots }); } });
+    callback.call(undefined, true);
+  });  
 }
 
 tripsController.end = function() {

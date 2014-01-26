@@ -28,10 +28,13 @@ module.exports = function routes() {
   this.get('users/failLogin', 'users#failLogin');
   this.get('users/currentUser', 'users#currentUser');
 
+  this.get('user/trips', 'user#getTrips');
+
   this.resource('trips');
   this.post('trips/addFriend', 'trips#addFriend');
   this.post('trips/addFriendId', 'trips#addFriendId');
   this.post('trips/addSpot', 'trips#addSpot');
+  this.get('trips/spots', 'trips#getSpots');
 
   this.get('twitter/post', 'twitter#post');
   this.post('twitter/link', 'twitter#link');

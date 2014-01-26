@@ -61,6 +61,9 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
       }
     });
     results.push("[[[Total " + successes + " tweets saved]]]");
+    console.log("##########[TWITTER]############");
+    console.log(results);
+    console.log("##########[TWITTER]############");
     callback(results);
   };
 
