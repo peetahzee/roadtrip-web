@@ -77,6 +77,9 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
     include_rts: false
   }, error, success);
 
+  self.respond( {
+    'json': function() { self.res.json( {status: "ok"}) }
+  });
 }
 
 twitterController.post = function() {
@@ -100,11 +103,7 @@ twitterController.post = function() {
     _.each(list, function(userId) {
       TwitterUser.findOne( { 'user' : userId } , {} , function(err, twitterUser) {
         if(twitterUser != null) {
-          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId, function(results) {
-            self.respond( {
-              'json': function() { self.res.json( {status: "ok", results: results}) }
-            });
-          });
+          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId);
         }
       });
     });
