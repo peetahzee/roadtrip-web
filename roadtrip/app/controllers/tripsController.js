@@ -12,10 +12,8 @@ var accessTrip = function(id, context, process) {
   var result;
   var self = context;
 
-  console.log(self.req.user);
   if (self.req.user) {
     Trip.findById(id, function(err, trip) {
-      console.log(trip);
       if (err) {
         result = { status: "err", error: err };
         self.respond({ 'json': function() { self.res.json(503, result); } });
