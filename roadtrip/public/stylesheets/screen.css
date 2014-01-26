@@ -98,10 +98,15 @@ header #user a:hover {
 	min-width: 1200px;
 }
 
-.tagline {
+.tagline, .wow {
 	font-size: 50px;
 	text-shadow: 3px 3px 10px rgba(0,0,0,0.8);
 	font-weight: bold;
+}
+.wow {
+	text-align: right;
+	margin-top: 10px;
+	font-size: 40px;
 }
 .description {
 	text-align: left;
