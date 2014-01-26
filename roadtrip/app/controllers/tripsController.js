@@ -64,7 +64,7 @@ tripsController.create = function() {
     trip.startPoint = [this.param('startLat'), this.param('startLng')];
     trip.endPoint = [this.param('endLat'), this.param('endLng')];
     trip.startCity = this.param('startCity');
-    trip.endCity = this.parm('endCity');
+    trip.endCity = this.param('endCity');
 
     var code;
     trip.save(function(err) {
