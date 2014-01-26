@@ -66,8 +66,7 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
       console.log("##########[TWITTER]############");
       console.log(results);
       console.log("##########[TWITTER]############");
-      callback(results);
-    }, 5000);
+    }, 1000);
   };
 
   var twitter = new Twitter(newConfig);
@@ -76,10 +75,6 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
     count: 10,
     include_rts: false
   }, error, success);
-
-  self.respond( {
-    'json': function() { self.res.json( {status: "ok"}) }
-  });
 }
 
 twitterController.post = function() {
@@ -107,6 +102,9 @@ twitterController.post = function() {
         }
       });
     });
+  });
+  this.respond( {
+    'json': function() { self.res.json( {status: "ok"}) }
   });
 }
 
