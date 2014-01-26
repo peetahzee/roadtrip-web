@@ -62,7 +62,6 @@ var getTweetsAndStore = function(username, oauthToken, oauthSecret, userId, call
         });
       }
     });
-    callback.call();
   };
 
   var twitter = new Twitter(newConfig);
@@ -92,16 +91,16 @@ twitterController.post = function() {
     })
 
     list = _.uniq(list);
-    _.each(list, function(userId) {
+    for(var i = 0; i < list.length; i++) {
+      var userId = list[i];
       TwitterUser.findOne( { 'user' : userId } , {} , function(err, twitterUser) {
         if(twitterUser != null) {
-          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId, function() {
-            self.respond( {
-              'json': function() { self.res.json(200, {status: "ok" })}
-            });
-          });
+          getTweetsAndStore(twitterUser.twitterUsername, twitterUser.oauthToken, twitterUser.oauthSecret, userId);
         }
       });
+    }
+    self.respond({
+      'json': function() { self.res.json(200, { status: "ok" }); }
     });
   });
 }
