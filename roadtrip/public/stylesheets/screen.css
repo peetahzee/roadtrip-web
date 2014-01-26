@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Alegreya+Sans:400,700,900|Roboto:400,300,700,500);
+@import url(http://fonts.googleapis.com/css?family=Alegreya+Sans:400,700,900|Roboto:400,300,700,500|Lobster);
 
 html, body {
   margin: 0;
@@ -31,6 +31,15 @@ header {
 	box-sizing: border-box;
 }
 
+header #such {
+	position: absolute;
+	top: 25px;
+	left: 30px;
+	font-size: 20px;
+	font-family: 'Lobster';
+	-webkit-transform: rotate(-20deg);
+}
+
 header h1 {
 	font-family: 'Alegreya Sans';
 	font-weight: 900;
@@ -40,6 +49,10 @@ header h1 {
 	padding: 0;
 	width: auto;
 	float: left;
+}
+header h1:first-letter{
+	font-size:75%;
+	text-transform: uppercase;
 }
 
 header #user {
